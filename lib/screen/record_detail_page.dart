@@ -1,12 +1,12 @@
-import 'package:profile_listing/models/attendance.dart';
 import 'package:flutter/material.dart';
+import 'package:profile_listing/models/user_model.dart';
 import 'package:share_plus/share_plus.dart';
 
 class RecordDetailsPage extends StatefulWidget {
-  final Attendance attendance;
+  final GetUserModel user;
   const RecordDetailsPage({
     super.key,
-    required this.attendance,
+    required this.user,
   });
 
   @override
@@ -18,14 +18,15 @@ class _RecordDetailsPageState extends State<RecordDetailsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Attendance Record"),
+        title: const Text("Profile"),
         actions: [
           IconButton(
             icon: const Icon(Icons.share),
             onPressed: () {
               final String contactInfo =
-                  "Name: ${widget.attendance.user}\nPhone Number: ${widget.attendance.phoneNum}\nCheck-In Time: ${widget.attendance.checkIn}";
-              Share.share(contactInfo, subject: "Attendance Record");
+                  "First Name: ${widget.user.first_name}" +
+                      " ${widget.user.last_name}\nEmail: ${widget.user.email}";
+              Share.share(contactInfo, subject: "user Record");
             },
           ),
         ],
@@ -39,17 +40,17 @@ class _RecordDetailsPageState extends State<RecordDetailsPage> {
                 ListTile(
                   leading: const Icon(Icons.person_outline_rounded),
                   title: const Text("Name"),
-                  subtitle: Text(widget.attendance.user),
+                  subtitle: Text(widget.user.first_name),
                 ),
                 ListTile(
                   leading: const Icon(Icons.phone_android_rounded),
                   title: const Text("Phone Number"),
-                  subtitle: Text(widget.attendance.phoneNum),
+                  subtitle: Text(widget.user.last_name),
                 ),
                 ListTile(
-                  leading: const Icon(Icons.timer_rounded),
-                  title: const Text("Check-In Time"),
-                  subtitle: Text(widget.attendance.checkIn.toString()),
+                  leading: const Icon(Icons.phone_android_rounded),
+                  title: const Text("Phone Number"),
+                  subtitle: Text(widget.user.email),
                 ),
               ],
             ),

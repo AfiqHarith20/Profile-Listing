@@ -1,17 +1,17 @@
-// import 'package:profile_listing/models/attendance.dart';
+// import 'package:profile_listing/models/user.dart';
 // import 'package:flutter/src/widgets/container.dart';
 // import 'package:flutter/src/widgets/framework.dart';
 // import 'package:flutter/material.dart';
 
 // class SearchPage extends StatefulWidget {
 //   static const String routeName = "/search";
-//   final List<Attendance> _attendance;
-//   final Function(List<Attendance>) onSearch;
+//   final List<user> _user;
+//   final Function(List<user>) onSearch;
 //   const SearchPage({
 //     super.key,
-//     required List<Attendance> attendance,
+//     required List<user> user,
 //     required this.onSearch,
-//   }) : _attendance = attendance;
+//   }) : _user = user;
 
 //   @override
 //   State<SearchPage> createState() => _SearchPageState();
@@ -44,12 +44,12 @@
 //           ),
 //           Expanded(
 //             child: ListView.builder(
-//               itemCount: widget._attendance.length,
+//               itemCount: widget._user.length,
 //               itemBuilder: (BuildContext context, int index) {
-//                 final attendance = widget._attendance[index];
+//                 final user = widget._user[index];
 //                 return ListTile(
-//                   title: Text(attendance.user),
-//                   subtitle: Text(attendance.phoneNum),
+//                   title: Text(user.user),
+//                   subtitle: Text(user.phoneNum),
 //                 );
 //               },
 //             ),
@@ -61,11 +61,11 @@
 
 //   void _handleSearch() {
 //     final keyword = _searchController.text.toLowerCase();
-//     final filteredAttendanceList = widget._attendance.where((attendance) {
-//       return attendance.user.toLowerCase().contains(keyword) ||
-//           attendance.phoneNum.toLowerCase().contains(keyword);
+//     final filtereduserList = widget._user.where((user) {
+//       return user.user.toLowerCase().contains(keyword) ||
+//           user.phoneNum.toLowerCase().contains(keyword);
 //     }).toList();
-//     widget.onSearch(filteredAttendanceList);
+//     widget.onSearch(filtereduserList);
 //     Navigator.pop(context);
 //   }
 // }
