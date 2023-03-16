@@ -1,5 +1,5 @@
 import 'package:profile_listing/dummy_data.dart';
-import 'package:profile_listing/models/attendance.dart';
+import 'package:profile_listing/models/user_model.dart';
 import 'package:profile_listing/screen/home_page.dart';
 import 'package:profile_listing/screen/search_page.dart';
 import 'package:flutter/foundation.dart';
@@ -45,7 +45,7 @@ class _OnBoardingPageState extends State<OnBoardingPage> {
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (_) => HomePage(
-          attendance: Dummy_Data,
+          user: [],
         ),
       ),
     );
@@ -103,19 +103,19 @@ class _OnBoardingPageState extends State<OnBoardingPage> {
       ),
       pages: [
         PageViewModel(
-          title: "Welcome To Attendance Record",
+          title: "Welcome To user Record",
           body: "This is a tutorial on how to use our apps",
           image: _buildImage('checklist.gif'),
           decoration: pageDecoration,
         ),
         PageViewModel(
-          title: "Adding New Attendance",
-          body: "Click + icon at bottom to add new attendance into the list.",
+          title: "Adding New user",
+          body: "Click + icon at bottom to add new user into the list.",
           image: _buildImage('add-file.gif'),
           decoration: pageDecoration,
         ),
         PageViewModel(
-          title: "Searching Attendance",
+          title: "Searching user",
           body:
               "Click search icon at top right to search user by entering their name or phone number.",
           image: _buildImage('search.gif'),

@@ -43,6 +43,9 @@ dependencies:
   animated_icon_button: ^1.0.2
   firebase_core: ^1.11.0
   firebase_database: ^8.1.1
+  http: ^0.13.5
+  another_flushbar: ^1.12.29
+  google_fonts: ^4.0.3
 
 
 dev_dependencies:

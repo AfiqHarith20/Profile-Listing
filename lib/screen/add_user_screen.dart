@@ -1,12 +1,12 @@
-import 'package:profile_listing/models/attendance.dart';
 import 'package:flutter/material.dart';
+import 'package:profile_listing/models/user_model.dart';
 
 class AddAttandanceRecordScreen extends StatefulWidget {
-  final Attendance attendance;
-  final void Function(Attendance) onSave;
+  final GetUserModel user;
+  final void Function(GetUserModel) onSave;
   const AddAttandanceRecordScreen({
     Key? key,
-    required this.attendance,
+    required this.user,
     required this.onSave,
   }) : super(key: key);
 
@@ -17,24 +17,26 @@ class AddAttandanceRecordScreen extends StatefulWidget {
 
 class _AddAttandanceRecordScreenState extends State<AddAttandanceRecordScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _nameController = TextEditingController();
-  final _phoneNumberController = TextEditingController();
-  final _checkInController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _firstnameController = TextEditingController();
+  final _lastnameController = TextEditingController();
+  final _avatarController = TextEditingController();
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    _nameController.text = widget.attendance.user;
-    _phoneNumberController.text = widget.attendance.phoneNum;
-    _checkInController.text = widget.attendance.checkIn.toIso8601String();
+    _emailController.text = widget.user.email;
+    _firstnameController.text = widget.user.first_name;
+    _lastnameController.text = widget.user.last_name;
+    _avatarController.value = widget.user.avatar as TextEditingValue;
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('New Attendance Record'),
+        title: const Text('New User Record'),
       ),
       body: Form(
         key: _formKey,
@@ -43,47 +45,55 @@ class _AddAttandanceRecordScreenState extends State<AddAttandanceRecordScreen> {
           child: Column(
             children: [
               TextFormField(
-                controller: _nameController,
+                controller: _emailController,
                 decoration: const InputDecoration(
-                  labelText: 'Name',
+                  labelText: 'Email',
                   prefixIcon: Icon(Icons.person_outline_rounded),
                 ),
                 validator: (value) {
                   if (value!.isEmpty) {
-                    return "Name can't be empty";
+                    return "email can't be empty";
                   }
                   return null;
                 },
               ),
               TextFormField(
-                controller: _phoneNumberController,
+                controller: _firstnameController,
                 decoration: const InputDecoration(
-                  labelText: 'Phone Number',
+                  labelText: 'First Name',
                   prefixIcon: Icon(Icons.phone_android_outlined),
                 ),
                 validator: (value) {
                   if (value!.isEmpty) {
-                    return "Phone Number can't be empty";
+                    return "First Name can't be empty";
                   }
                   return null;
                 },
               ),
-              TextField(
-                controller: _checkInController,
+              TextFormField(
+                controller: _lastnameController,
                 decoration: const InputDecoration(
-                  labelText: 'Check In Time',
-                  prefixIcon: Icon(Icons.timer_rounded),
+                  labelText: 'Last Name',
+                  prefixIcon: Icon(Icons.phone_android_outlined),
                 ),
+                validator: (value) {
+                  if (value!.isEmpty) {
+                    return "Last Name can't be empty";
+                  }
+                  return null;
+                },
               ),
               ElevatedButton(
                 onPressed: () {
                   if (_formKey.currentState!.validate()) {
-                    final newAttendance = Attendance(
-                      user: _nameController.text,
-                      phoneNum: _phoneNumberController.text,
-                      checkIn: DateTime.parse(_checkInController.text),
+                    final newuser = GetUserModel(
+                      email: _emailController.text,
+                      first_name: _firstnameController.text,
+                      last_name: _lastnameController.text,
+                      avatar: _avatarController.text,
+                      id: '' as int,
                     );
-                    widget.onSave(newAttendance);
+                    widget.onSave(newuser);
                   }
                 },
                 child: const Text('Save'),
