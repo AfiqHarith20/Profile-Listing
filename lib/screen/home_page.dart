@@ -72,8 +72,6 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    timeago.setLocaleMessages('en_short', timeago.EnShortMessages());
-    timeago.setLocaleMessages('en', timeago.FrMessages());
     //load the saved state of the toggle button
     SharedPreferences.getInstance().then((prefs) {
       _isToggle = prefs.getBool("isToggle") ?? false;
@@ -82,7 +80,7 @@ class _HomePageState extends State<HomePage> {
     _filteredAttendanceList = widget._attendance;
     _searchController.addListener(_handleSearch);
     _scrollController.addListener(_checkEndReached);
-    this.fetchUser();
+    this.fetchUserJson();
     if (_currentPage < _totalPage) {
       _currentPage++;
       this.fetchUserJson();
@@ -90,40 +88,46 @@ class _HomePageState extends State<HomePage> {
   }
 
   fetchUserJson() async {
+    setState(() {
+      isLoading = true;
+    });
     var basedUrl = "https://reqres.in/api/users?page=1";
     var response = await http.get(Uri.parse(basedUrl)).catchError((error) {
       print(error.toString());
       return false;
     });
-    // if (response.statusCode == 200) {
-    //   var items = json.decode(response.body);
-    //   setState(() {
-    //     user = items;
-    //   });
-    // } else {
-    //   throw Exception("Failed to load Data");
-    // }
-    // print(response.statusCode);
+    if (response.statusCode == 200) {
+      var items = json.decode(response.body)['data'];
+      // print(items);
+      setState(() {
+        user = items;
+        isLoading = false;
+      });
+    } else {
+      isLoading = false;
+      throw Exception("Failed to load Data");
+    }
+    print(response.statusCode);
   }
 
-  Future fetchUser() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
+  // Future fetchUser() async {
+  //   final SharedPreferences prefs = await SharedPreferences.getInstance();
 
-    isLoading = true;
+  //   isLoading = true;
 
-    var dataFromResponse = await fetchUserJson();
-    print('USER INFO DATA *********');
-    print(dataFromResponse);
+  //   var dataFromResponse = await fetchUserJson();
+  //   print('USER INFO DATA *********');
+  //   print(dataFromResponse);
 
-    _id = dataFromResponse['data']['user']['id'];
-    _first_name = dataFromResponse['data']['user']['first_name'];
-    _last_name = dataFromResponse['data']['user']['last_name'];
-    _email = dataFromResponse['data']['user']['email'];
-    _avatar = dataFromResponse['data']['user']['avatar'];
+  //   _id = dataFromResponse['data']['id'];
+  //   _first_name = dataFromResponse['data']['first_name'];
+  //   _last_name = dataFromResponse['data']['last_name'];
+  //   _email = dataFromResponse['data']['email'];
+  //   _avatar = dataFromResponse['data']['avatar'];
 
-    prefs.setInt('user_id', _id);
-    isLoading = false;
-  }
+  //   prefs.setInt('user_id', _id);
+  //   isLoading = false;
+  // }
 
   @override
   void dispose() {
@@ -173,61 +177,98 @@ class _HomePageState extends State<HomePage> {
     );
     return Builder(
       builder: (BuildContext context) {
-        return Scaffold(
-          appBar: AppBar(
-            centerTitle: true,
-            title: const Text("My Contact"),
+        return SafeArea(
+          child: Scaffold(
+            appBar: AppBar(
+              centerTitle: true,
+              title: const Text("My Contact"),
+              actions: [
+                IconButton(
+                  icon: Icon(Icons.refresh_outlined),
+                  onPressed: fetchUserJson,
+                ),
+              ],
+            ),
+            body: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                children: [
+                  Center(
+                    child: TextField(
+                      decoration: InputDecoration(
+                        labelText: "Search Contact",
+                        contentPadding:
+                            EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(20),
+                          borderSide: BorderSide.none,
+                        ),
+                        filled: true,
+                        fillColor: Colors.grey[300],
+                        prefixIcon: Icon(
+                          Icons.search_outlined,
+                        ),
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  Row(
+                    children: <Widget>[
+                      OutlinedButton(
+                          child: const Text(
+                            'All',
+                            style: TextStyle(
+                              color: Colors.white,
+                            ),
+                          ),
+                          onPressed: () {},
+                          style: ButtonStyle(
+                              backgroundColor: MaterialStateProperty.all<Color>(
+                                  Color.fromARGB(255, 121, 235, 208)))),
+                      SizedBox(
+                        width: 5,
+                      ),
+                      OutlinedButton(
+                        child: const Text('Favourite'),
+                        onPressed: () {},
+                      ),
+                    ],
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  Expanded(
+                    child: getBody(),
+                  ),
+                ],
+              ),
+            ),
           ),
-          body: getBody(),
         );
       },
     );
   }
 
   Widget getBody() {
-    // List items = [
-    //   1,
-    //   2,
-    //   3,
-    //   4,
-    //   5,
-    //   6,
-    // ];
+    if (user.contains(null) || user.length < 0 || isLoading)
+      return Center(
+        child: CircularProgressIndicator(),
+        heightFactor: 30,
+        widthFactor: 30,
+      );
     return ListView.builder(
-      itemCount: user.length + (_currentPage < _totalPage ? 1 : 0),
-      itemBuilder: (context, index) {
-        if (index == user.length) {
+        itemCount: user.length,
+        itemBuilder: (context, index) {
           return getCard(user[index]);
-        }
-        return Container();
-      },
-    );
+        });
   }
 
-  // Widget getbody() {
-  //   return Column(
-  //     children: [
-  //       Center(
-  //         child: TextField(
-  //           decoration: InputDecoration(
-  //             labelText: "Search Contact",
-  //             contentPadding:
-  //                 EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
-  //             border: OutlineInputBorder(
-  //               borderRadius: BorderRadius.circular(20),
-  //               borderSide: BorderSide.none,
-  //             ),
-  //             filled: true,
-  //             fillColor: Colors.grey[300],
-  //             prefixIcon: Icon(Icons.search),
-  //           ),
-  //         ),
-  //       ),
-  //     ],
-  //   );
-  // }
-
-  Widget getCard(index) {
+  Widget getCard(items) {
+    var fullName = items['first_name'] + '' + items['last_name'];
+    var email = items['email'];
+    var avatar = items['avatar'];
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(10.0),
@@ -242,7 +283,7 @@ class _HomePageState extends State<HomePage> {
                   borderRadius: BorderRadius.circular(60 / 2),
                   image: DecorationImage(
                     fit: BoxFit.cover,
-                    image: NetworkImage(""),
+                    image: NetworkImage(avatar.toString()),
                   ),
                 ),
               ),
@@ -253,14 +294,14 @@ class _HomePageState extends State<HomePage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   Text(
-                    "Testing",
+                    fullName.toString(),
                     style: TextStyle(fontSize: 17),
                   ),
                   SizedBox(
                     height: 10,
                   ),
                   Text(
-                    "Testing@gmail.com",
+                    email.toString(),
                     style: TextStyle(color: Colors.grey),
                   ),
                 ],
