@@ -13,7 +13,7 @@ class UserScopedModel extends Model {
   List<UserModel> get userList => _userList;
   bool _isLoading = false;
   late int _id;
-  late String _email, _first_name, _last_name, _avatar;
+  late String _email, _first_name, _last_name, _avatar, usr;
   bool get isLoading => _isLoading;
   int totUser = 0;
 
@@ -45,10 +45,10 @@ class UserScopedModel extends Model {
     return _avatar;
   }
 
-  Future<dynamic> _getProfileJson() async {
+  Future<dynamic> fetchUserJson() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     var response = await http.get(
-      Uri.parse(Constants.basedUrl + 'users/2'),
+      Uri.parse(Constants.basedUrl + 'users?page=1'),
       headers: {'Content-Type': 'application/json'},
     ).catchError((error) {
       print(error.toString());
@@ -59,13 +59,13 @@ class UserScopedModel extends Model {
     return json.decode(response.body);
   }
 
-  Future fetchProfile() async {
+  Future fetchUser() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
 
     _isLoading = true;
     notifyListeners();
 
-    var dataFromResponse = await _getProfileJson();
+    var dataFromResponse = await fetchUserJson();
     print('USER INFO DATA ************************************************');
     print(dataFromResponse);
 
@@ -78,16 +78,5 @@ class UserScopedModel extends Model {
     prefs.setInt('id', _id);
     _isLoading = false;
     notifyListeners();
-  }
-
-  Future parseUserFromRespond(int id, int page) async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    if (page == 1) {
-      _isLoading = true;
-    }
-    var dataFromResponse = await _getProfileJson();
-    notifyListeners();
-
-    totUser = dataFromResponse['data']['user']['total'];
   }
 }

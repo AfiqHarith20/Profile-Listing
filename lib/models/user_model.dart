@@ -1,6 +1,6 @@
 class UserModel {
-  late final int id;
-  late final String email, first_name, last_name, avatar;
+  final int id;
+  final String email, first_name, last_name, avatar;
 
   UserModel({
     required this.id,
@@ -10,8 +10,8 @@ class UserModel {
     required this.avatar,
   });
 
-  // factory GetUserModel.fromJson(Map<String, dynamic> json) {
-  //   return GetUserModel(
+  // factory UserModel.fromJson(Map<String, dynamic> json) {
+  //   return UserModel(
   //     id: json['id'],
   //     email: json['email'],
   //     first_name: json['first_name'],
