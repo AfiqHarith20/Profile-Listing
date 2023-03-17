@@ -1,156 +1,156 @@
-import 'dart:async';
-import 'dart:collection';
-import 'dart:convert';
+// import 'dart:async';
+// import 'dart:collection';
+// import 'dart:convert';
 
-import 'package:flutter/material.dart';
-import 'package:http/http.dart';
-import 'package:profile_listing/api/constant.dart';
-import 'package:profile_listing/bloc/user_bloc.dart';
-import 'package:profile_listing/utils/utils.dart';
+// import 'package:flutter/material.dart';
+// import 'package:http/http.dart';
+// import 'package:profile_listing/api/constant.dart';
+// import 'package:profile_listing/bloc/user_bloc.dart';
+// import 'package:profile_listing/utils/utils.dart';
 
-import '../main.dart';
+// import '../main.dart';
 
-enum Add_User_Event {
-  POST_USER,
-  POST_EDIT_USER,
-  POST_DELETE_USER,
-  GET_USERS_DEFAULT_ADD,
-}
+// enum Add_User_Event {
+//   POST_USER,
+//   POST_EDIT_USER,
+//   POST_DELETE_USER,
+//   GET_USERS_DEFAULT_ADD,
+// }
 
-class Add_User_Bloc {
-  late String id2;
-  late BuildContext context;
+// class Add_User_Bloc {
+//   late String id2;
+//   late BuildContext context;
 
-  final _eventStreamController = StreamController<Add_User_Event>.broadcast();
+//   final _eventStreamController = StreamController<Add_User_Event>.broadcast();
 
-  StreamSink get eventSink => _eventStreamController.sink;
-  Stream get _eventSteam => _eventStreamController.stream;
+//   StreamSink get eventSink => _eventStreamController.sink;
+//   Stream get _eventSteam => _eventStreamController.stream;
 
-  final _stateStreamController = StreamController<dynamic>.broadcast();
+//   final _stateStreamController = StreamController<dynamic>.broadcast();
 
-  StreamSink get _stateSink => _stateStreamController.sink;
-  Stream get stateSteam => _stateStreamController.stream;
+//   StreamSink get _stateSink => _stateStreamController.sink;
+//   Stream get stateSteam => _stateStreamController.stream;
 
-  HashMap<String, String> params = new HashMap<String, String>();
+//   HashMap<String, String> params = new HashMap<String, String>();
 
-  void initAddNewUser(
-    BuildContext context,
-    String email,
-    String first_name,
-    String last_name,
-    String avatar,
-    UserBloc userBloc,
-  ) {
-    this.context = context;
-    this._userBloc = userBloc;
+//   void initAddNewUser(
+//     BuildContext context,
+//     String email,
+//     String first_name,
+//     String last_name,
+//     String avatar,
+//     UserBloc userBloc,
+//   ) {
+//     this.context = context;
+//     this._userBloc = userBloc;
 
-    params.clear();
-    params.putIfAbsent("email", () => email);
-    params.putIfAbsent("first_name", () => first_name);
-    params.putIfAbsent("last_name", () => last_name);
-    params.putIfAbsent("avatar", () => avatar);
+//     params.clear();
+//     params.putIfAbsent("email", () => email);
+//     params.putIfAbsent("first_name", () => first_name);
+//     params.putIfAbsent("last_name", () => last_name);
+//     params.putIfAbsent("avatar", () => avatar);
 
-    print('my new confirm $params');
+//     print('my new confirm $params');
 
-    eventSink.add(Add_User_Event.POST_USER);
-  }
+//     eventSink.add(Add_User_Event.POST_USER);
+//   }
 
-  UserBloc? _userBloc;
+//   UserBloc? _userBloc;
 
-  void initEditUser(
-    BuildContext context,
-    String id,
-    String email,
-    String first_name,
-    String last_name,
-    String avatar,
-    UserBloc userBloc,
-  ) {
-    this.context = context;
-    this.id2 = id;
+//   void initEditUser(
+//     BuildContext context,
+//     String id,
+//     String email,
+//     String first_name,
+//     String last_name,
+//     String avatar,
+//     UserBloc userBloc,
+//   ) {
+//     this.context = context;
+//     this.id2 = id;
 
-    params.clear();
-    params.putIfAbsent("email", () => email);
-    params.putIfAbsent("first_name", () => first_name);
-    params.putIfAbsent("last_name", () => last_name);
-    params.putIfAbsent("avatar", () => avatar);
+//     params.clear();
+//     params.putIfAbsent("email", () => email);
+//     params.putIfAbsent("first_name", () => first_name);
+//     params.putIfAbsent("last_name", () => last_name);
+//     params.putIfAbsent("avatar", () => avatar);
 
-    print('my new confirm $params');
-    print('my new id $id');
+//     print('my new confirm $params');
+//     print('my new id $id');
 
-    this._userBloc = _userBloc;
+//     this._userBloc = _userBloc;
 
-    eventSink.add(Add_User_Event.POST_EDIT_USER);
-  }
+//     eventSink.add(Add_User_Event.POST_EDIT_USER);
+//   }
 
-  void InitDeleteUser(
-    BuildContext context,
-    String id,
-  ) {
-    this.context = context;
-    this.id2 = id;
+//   void InitDeleteUser(
+//     BuildContext context,
+//     String id,
+//   ) {
+//     this.context = context;
+//     this.id2 = id;
 
-    eventSink.add(Add_User_Event.POST_DELETE_USER);
-  }
+//     eventSink.add(Add_User_Event.POST_DELETE_USER);
+//   }
 
-  Function? refreshUser;
+//   Function? refreshUser;
 
-  void initGetDefaultUser(BuildContext context, String id, {refreshUser}) {
-    this.refreshUser = refreshUser;
+//   void initGetDefaultUser(BuildContext context, String id, {refreshUser}) {
+//     this.refreshUser = refreshUser;
 
-    this.context = context;
-    this.id2 = id;
+//     this.context = context;
+//     this.id2 = id;
 
-    eventSink.add(Add_User_Event.GET_USERS_DEFAULT_ADD);
-  }
+//     eventSink.add(Add_User_Event.GET_USERS_DEFAULT_ADD);
+//   }
 
-  Add_User_Bloc() {
-    dynamic responseJson = "";
-    _eventSteam.listen((event) async {
-      if (event == Add_User_Event.POST_USER) {
-        _stateSink.add('load');
+//   Add_User_Bloc() {
+//     dynamic responseJson = "";
+//     _eventSteam.listen((event) async {
+//       if (event == Add_User_Event.POST_USER) {
+//         _stateSink.add('load');
 
-        Response response = await Constant().initPostData(createUser, params);
+//         Response response = await Constant().initPostData(createUser, params);
 
-        _stateSink.add('finish');
+//         _stateSink.add('finish');
 
-        serialiseJson(response, context, () async {
-          _userBloc!.eventSink.add(User_Event.GET_USER_FETCH);
-          responseJson = json.decode(response.body);
-          print("User post $responseJson");
-        });
-      } else if (event == Add_User_Event.POST_EDIT_USER) {
-        _stateSink.add('load');
+//         serialiseJson(response, context, () async {
+//           _userBloc!.eventSink.add(User_Event.GET_USER_FETCH);
+//           responseJson = json.decode(response.body);
+//           print("User post $responseJson");
+//         });
+//       } else if (event == Add_User_Event.POST_EDIT_USER) {
+//         _stateSink.add('load');
 
-        Response response =
-            await Constant().initPostData(editUser + '$id2', params);
+//         Response response =
+//             await Constant().initPostData(editUser + '$id2', params);
 
-        _stateSink.add('finish');
+//         _stateSink.add('finish');
 
-        serialiseJson(response, context, () async {
-          _userBloc!.eventSink.add(User_Event.GET_USER_FETCH);
-          responseJson = json.decode(response.body);
-          Navigator.pop(context);
+//         serialiseJson(response, context, () async {
+//           _userBloc!.eventSink.add(User_Event.GET_USER_FETCH);
+//           responseJson = json.decode(response.body);
+//           Navigator.pop(context);
 
-          print("User post $responseJson");
-        });
-      } else if (event == Add_User_Event.POST_DELETE_USER) {
-        _stateSink.add('load');
+//           print("User post $responseJson");
+//         });
+//       } else if (event == Add_User_Event.POST_DELETE_USER) {
+//         _stateSink.add('load');
 
-        Response response = await Constant().initPostDeleteData(
-          deleteUser + '$id2',
-        );
+//         Response response = await Constant().initPostDeleteData(
+//           deleteUser + '$id2',
+//         );
 
-        _stateSink.add('finish');
+//         _stateSink.add('finish');
 
-        refreshUser!();
+//         refreshUser!();
 
-        serialiseJson(response, context, () async {
-          _userBloc?.eventSink.add(User_Event.GET_USER_FETCH);
-          responseJson = json.decode(response.body);
-          Navigator.pop(context);
-        });
-      }
-    });
-  }
-}
+//         serialiseJson(response, context, () async {
+//           _userBloc?.eventSink.add(User_Event.GET_USER_FETCH);
+//           responseJson = json.decode(response.body);
+//           Navigator.pop(context);
+//         });
+//       }
+//     });
+//   }
+// }
