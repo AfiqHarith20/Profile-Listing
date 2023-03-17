@@ -1,11 +1,11 @@
 import 'package:profile_listing/dummy_data.dart';
 import 'package:profile_listing/models/user_model.dart';
 import 'package:profile_listing/screen/home_page.dart';
-import 'package:profile_listing/screen/search_page.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:introduction_screen/introduction_screen.dart';
+import 'package:profile_listing/screen/home_page1.dart';
 
 void main() {
   runApp(const MyApp());
@@ -24,7 +24,7 @@ class MyApp extends StatelessWidget {
       title: 'Profile Listing',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        primarySwatch: Colors.red,
+        primarySwatch: Colors.teal,
       ),
       home: const OnBoardingPage(),
     );
@@ -45,7 +45,8 @@ class _OnBoardingPageState extends State<OnBoardingPage> {
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (_) => HomePage(
-          user: [],
+          attendance: [],
+          // user: [],
         ),
       ),
     );

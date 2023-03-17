@@ -23,7 +23,7 @@ void serialiseJson(
       context,
       MaterialPageRoute(
           builder: (context) => HomePage(
-                user: [],
+                attendance: [],
               )),
       (Route<dynamic> route) => false,
     );
