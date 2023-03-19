@@ -47,6 +47,8 @@ dependencies:
   another_flushbar: ^1.12.29
   google_fonts: ^4.0.3
   scoped_model: ^2.0.0
+  animated_theme_switcher: ^2.0.8
+  image_picker: ^0.8.7
 
 
 dev_dependencies:

@@ -9,32 +9,28 @@ import 'package:profile_listing/models/attendance.dart';
 import 'package:profile_listing/models/user_model.dart';
 import 'package:profile_listing/scoped/scoped_user.dart';
 import 'package:profile_listing/screen/add_user_screen.dart';
-import 'package:profile_listing/screen/record_detail_page.dart';
+import 'package:profile_listing/screen/profile_page.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:timeago/timeago.dart' as timeago;
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
 import 'dart:io';
 
 class HomePage extends StatefulWidget {
-  final List<Attendance> _attendance;
   const HomePage({
     super.key,
-    required List<Attendance> attendance,
-  }) : _attendance = attendance;
+  });
 
   @override
   State<HomePage> createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {
-  List<dynamic> user = [];
+  late UserModel user;
+  bool isDataLoaded = false;
+  String errorMessage = '';
+  // List<dynamic> user = [];
   bool isLoading = false;
-  late int _id;
-  late String _email, _first_name, _last_name, _avatar;
-  late List<Attendance> _filteredAttendance = List.from(widget._attendance);
-  late List<Attendance> _filteredAttendanceList;
   final _scrollController = ScrollController();
   final _searchController = TextEditingController();
   bool _isToggle = false;
@@ -44,30 +40,27 @@ class _HomePageState extends State<HomePage> {
   late int _totalPage = 2;
   late int _perPage = 6;
 
-  final DateFormat _ddMMMYYFormat = DateFormat("dd MM yyyy, h:mm:a");
-
-  void _addAttendanceRecord() {
-    final newAttendance = Attendance(
-      user: '',
-      phoneNum: '',
-      checkIn: DateTime.now(),
-    );
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => AddAttandanceRecordScreen(
-            attendance: newAttendance,
-            onSave: (attendance) {
-              setState(() {
-                widget._attendance.add(attendance);
-                _filteredAttendance.add(attendance);
-              });
-              Navigator.pop(context);
-              _showSuccessSnackBar();
-            }),
-      ),
-    );
-  }
+  // void _addAttendanceRecord() {
+  //   final newAttendance = Attendance(
+  //     user: '',
+  //     phoneNum: '',
+  //   );
+  //   Navigator.push(
+  //     context,
+  //     MaterialPageRoute(
+  //       builder: (context) => AddAttandanceRecordScreen(
+  //           attendance: newAttendance,
+  //           onSave: (attendance) {
+  //             setState(() {
+  //               widget._attendance.add(attendance);
+  //               _filteredAttendance.add(attendance);
+  //             });
+  //             Navigator.pop(context);
+  //             _showSuccessSnackBar();
+  //           }),
+  //     ),
+  //   );
+  // }
 
   @override
   void initState() {
@@ -77,57 +70,36 @@ class _HomePageState extends State<HomePage> {
       _isToggle = prefs.getBool("isToggle") ?? false;
       if (mounted) setState(() {});
     });
-    _filteredAttendanceList = widget._attendance;
     _searchController.addListener(_handleSearch);
     _scrollController.addListener(_checkEndReached);
-    this.fetchUserJson();
-    if (_currentPage < _totalPage) {
-      _currentPage++;
-      this.fetchUserJson();
-    }
+    callAPIandAssignData();
+    // this.fetchUserJson();
+    // if (_currentPage < _totalPage) {
+    //   _currentPage++;
+    //   this.fetchUserJson();
+    // }
   }
 
-  fetchUserJson() async {
-    setState(() {
-      isLoading = true;
-    });
-    var basedUrl = "https://reqres.in/api/users?page=1";
-    var response = await http.get(Uri.parse(basedUrl)).catchError((error) {
-      print(error.toString());
-      return false;
-    });
-    if (response.statusCode == 200) {
-      var items = json.decode(response.body)['data'];
-      // print(items);
-      setState(() {
-        user = items;
-        isLoading = false;
-      });
-    } else {
-      isLoading = false;
-      throw Exception("Failed to load Data");
-    }
+  Future<UserModel> getDataFromAPI() async {
+    Uri uri = Uri.parse('https://reqres.in/api/users?page=1');
+    var response = await http.get(uri);
     print(response.statusCode);
+    if (response.statusCode == 200) {
+      // All ok
+      UserModel usersPets = userModelFromJson(response.body);
+      setState(() {
+        isDataLoaded = true;
+      });
+      return usersPets;
+    } else {
+      errorMessage = '${response.statusCode}: ${response.body} ';
+      return UserModel(data: []);
+    }
   }
 
-  // Future fetchUser() async {
-  //   final SharedPreferences prefs = await SharedPreferences.getInstance();
-
-  //   isLoading = true;
-
-  //   var dataFromResponse = await fetchUserJson();
-  //   print('USER INFO DATA *********');
-  //   print(dataFromResponse);
-
-  //   _id = dataFromResponse['data']['id'];
-  //   _first_name = dataFromResponse['data']['first_name'];
-  //   _last_name = dataFromResponse['data']['last_name'];
-  //   _email = dataFromResponse['data']['email'];
-  //   _avatar = dataFromResponse['data']['avatar'];
-
-  //   prefs.setInt('user_id', _id);
-  //   isLoading = false;
-  // }
+  callAPIandAssignData() async {
+    user = await getDataFromAPI();
+  }
 
   @override
   void dispose() {
@@ -148,13 +120,13 @@ class _HomePageState extends State<HomePage> {
   }
 
   void _handleSearch() {
-    final keyword = _searchController.text.toLowerCase();
-    setState(() {
-      _filteredAttendance = widget._attendance.where((attendance) {
-        return attendance.user.toLowerCase().contains(keyword) ||
-            attendance.phoneNum.toLowerCase().contains(keyword);
-      }).toList();
-    });
+    // final keyword = _searchController.text.toLowerCase();
+    // setState(() {
+    //   user = user.where((items) {
+    //     return items.user.toLowerCase().contains(keyword) ||
+    //         items.phoneNum.toLowerCase().contains(keyword);
+    //   }).toList();
+    // });
   }
 
   // void _openSearchPage() {
@@ -165,27 +137,35 @@ class _HomePageState extends State<HomePage> {
   // }
 
   void onSearch(List<Attendance> filteredList) {
-    setState(() {
-      _filteredAttendanceList = filteredList;
-    });
+    setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
-    final sortedAttendances = _filteredAttendance.sort(
-      (a, b) => b.checkIn.compareTo(a.checkIn),
-    );
     return Builder(
       builder: (BuildContext context) {
         return SafeArea(
           child: Scaffold(
+            floatingActionButton: FloatingActionButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => AddUserScreen(
+                      addUser: user.data[_currentPage],
+                    ),
+                  ),
+                );
+              },
+              child: const Icon(Icons.add),
+            ),
             appBar: AppBar(
               centerTitle: true,
               title: const Text("My Contact"),
               actions: [
                 IconButton(
                   icon: Icon(Icons.refresh_outlined),
-                  onPressed: fetchUserJson,
+                  onPressed: getDataFromAPI,
                 ),
               ],
             ),
@@ -240,7 +220,19 @@ class _HomePageState extends State<HomePage> {
                     height: 10,
                   ),
                   Expanded(
-                    child: getBody(),
+                    child: isDataLoaded
+                        ? errorMessage.isNotEmpty
+                            ? Text(errorMessage)
+                            : user.data.isEmpty
+                                ? const Text('No Data')
+                                : ListView.builder(
+                                    itemCount: user.data.length,
+                                    itemBuilder: (context, index) =>
+                                        getCard(index),
+                                  )
+                        : const Center(
+                            child: CircularProgressIndicator(),
+                          ),
                   ),
                 ],
               ),
@@ -251,28 +243,35 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget getBody() {
-    if (user.contains(null) || user.length < 0 || isLoading)
-      return Center(
-        child: CircularProgressIndicator(),
-        heightFactor: 30,
-        widthFactor: 30,
-      );
-    return ListView.builder(
-        itemCount: user.length,
-        itemBuilder: (context, index) {
-          return getCard(user[index]);
-        });
-  }
+  // Widget getBody() {
+  //   if (user.data.contains(null) || user.data.length < 0 || isLoading)
+  //     return Center(
+  //       child: CircularProgressIndicator(),
+  //       heightFactor: 30,
+  //       widthFactor: 30,
+  //     );
+  //   return ListView.builder(
+  //       itemCount: user.data.length,
+  //       itemBuilder: (context, index) {
+  //         return getCard(index);
+  //       });
+  // }
 
-  Widget getCard(items) {
-    var fullName = items['first_name'] + '' + items['last_name'];
-    var email = items['email'];
-    var avatar = items['avatar'];
+  Widget getCard(index) {
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(10.0),
         child: ListTile(
+          onTap: () async {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => ProfilePage(
+                  profile: user.data[index],
+                ),
+              ),
+            );
+          },
           title: Row(
             children: <Widget>[
               Container(
@@ -283,7 +282,7 @@ class _HomePageState extends State<HomePage> {
                   borderRadius: BorderRadius.circular(60 / 2),
                   image: DecorationImage(
                     fit: BoxFit.cover,
-                    image: NetworkImage(avatar.toString()),
+                    image: NetworkImage(user.data[index].avatar),
                   ),
                 ),
               ),
@@ -294,18 +293,28 @@ class _HomePageState extends State<HomePage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   Text(
-                    fullName.toString(),
+                    user.data[index].firstName +
+                        " " +
+                        user.data[index].lastName,
                     style: TextStyle(fontSize: 17),
                   ),
                   SizedBox(
                     height: 10,
                   ),
                   Text(
-                    email.toString(),
+                    user.data[index].email,
                     style: TextStyle(color: Colors.grey),
                   ),
                 ],
               ),
+              Padding(
+                padding: EdgeInsets.symmetric(vertical: 8),
+                child: IconButton(
+                  onPressed: () {},
+                  icon: Icon(Icons.send_sharp),
+                  alignment: Alignment.topRight,
+                ),
+              )
             ],
           ),
         ),
