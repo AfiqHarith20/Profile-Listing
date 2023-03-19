@@ -9,7 +9,8 @@
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/> -->
 
    <application
-        android:label="Attendance Record"
+        android:requestLegacyExternalStorage="true"
+        android:label="User List"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

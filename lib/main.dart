@@ -5,7 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:introduction_screen/introduction_screen.dart';
-import 'package:profile_listing/screen/home_page1.dart';
+import 'package:profile_listing/screen/profile_page.dart';
 
 void main() {
   runApp(const MyApp());
@@ -45,9 +45,8 @@ class _OnBoardingPageState extends State<OnBoardingPage> {
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (_) => HomePage(
-          attendance: [],
-          // user: [],
-        ),
+            // user: [],
+            ),
       ),
     );
   }
