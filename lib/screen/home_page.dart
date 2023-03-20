@@ -1,20 +1,14 @@
-import 'dart:convert';
-
-import 'package:animated_icon_button/animated_icon_button.dart';
-import 'package:date_format/date_format.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/container.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:profile_listing/models/attendance.dart';
+
 import 'package:profile_listing/models/user_model.dart';
-import 'package:profile_listing/scoped/scoped_user.dart';
+
 import 'package:profile_listing/screen/add_user_screen.dart';
 import 'package:profile_listing/screen/profile_page.dart';
-import 'package:scoped_model/scoped_model.dart';
+import 'package:profile_listing/widget/slidable_widget.dart';
+
+import 'package:share_plus/share_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
-import 'dart:io';
 
 class HomePage extends StatefulWidget {
   const HomePage({
@@ -40,28 +34,6 @@ class _HomePageState extends State<HomePage> {
   late int _totalPage = 2;
   late int _perPage = 6;
 
-  // void _addAttendanceRecord() {
-  //   final newAttendance = Attendance(
-  //     user: '',
-  //     phoneNum: '',
-  //   );
-  //   Navigator.push(
-  //     context,
-  //     MaterialPageRoute(
-  //       builder: (context) => AddAttandanceRecordScreen(
-  //           attendance: newAttendance,
-  //           onSave: (attendance) {
-  //             setState(() {
-  //               widget._attendance.add(attendance);
-  //               _filteredAttendance.add(attendance);
-  //             });
-  //             Navigator.pop(context);
-  //             _showSuccessSnackBar();
-  //           }),
-  //     ),
-  //   );
-  // }
-
   @override
   void initState() {
     super.initState();
@@ -70,7 +42,7 @@ class _HomePageState extends State<HomePage> {
       _isToggle = prefs.getBool("isToggle") ?? false;
       if (mounted) setState(() {});
     });
-    _searchController.addListener(_handleSearch);
+    // _searchController.addListener(_handleSearch);
     _scrollController.addListener(_checkEndReached);
     callAPIandAssignData();
     // this.fetchUserJson();
@@ -97,6 +69,21 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
+  void deleteUser({required int id}) async {
+    Uri uri = Uri.parse("https://reqres.in/api/users/$id");
+    var response = await http.delete(uri);
+    print(response.statusCode);
+    if (response.statusCode == 200) {
+      await ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Successfully delete user"),
+          backgroundColor: Colors.blueAccent,
+        ),
+      );
+      Navigator.pop(context);
+    }
+  }
+
   callAPIandAssignData() async {
     user = await getDataFromAPI();
   }
@@ -119,15 +106,15 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  void _handleSearch() {
-    // final keyword = _searchController.text.toLowerCase();
-    // setState(() {
-    //   user = user.where((items) {
-    //     return items.user.toLowerCase().contains(keyword) ||
-    //         items.phoneNum.toLowerCase().contains(keyword);
-    //   }).toList();
-    // });
-  }
+  // void _handleSearch() {
+  //   final keyword = _searchController.text.toLowerCase();
+  //   setState(() {
+  //     _filteredAttendance = user.where((user) {
+  //       return user.user.toLowerCase().contains(keyword) ||
+  //           user.phoneNum.toLowerCase().contains(keyword);
+  //     }).toList();
+  //   });
+  // }
 
   // void _openSearchPage() {
   //   Navigator.pushNamed(context, SearchPage.routeName, arguments: {
@@ -135,10 +122,6 @@ class _HomePageState extends State<HomePage> {
   //     'onSearch': onSearch,
   //   });
   // }
-
-  void onSearch(List<Attendance> filteredList) {
-    setState(() {});
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -227,9 +210,15 @@ class _HomePageState extends State<HomePage> {
                                 ? const Text('No Data')
                                 : ListView.builder(
                                     itemCount: user.data.length,
-                                    itemBuilder: (context, index) =>
-                                        getCard(index),
-                                  )
+                                    itemBuilder: (context, index) {
+                                      return SlidableWidget(
+                                        onDismissed: (action) =>
+                                            dismissSlidableItem(
+                                                context, index, action),
+                                        edits: user.data[index],
+                                        child: getCard(index),
+                                      );
+                                    })
                         : const Center(
                             child: CircularProgressIndicator(),
                           ),
@@ -241,6 +230,22 @@ class _HomePageState extends State<HomePage> {
         );
       },
     );
+  }
+
+  void dismissSlidableItem(
+      BuildContext context, int index, SlidableActions action) {
+    setState(() {
+      user.data.removeAt(index);
+      profile:
+      user.data[index];
+    });
+
+    switch (action) {
+      case SlidableActions.delete:
+        break;
+      // case SlidableActions.edit:
+      //   break;
+    }
   }
 
   // Widget getBody() {
@@ -262,6 +267,12 @@ class _HomePageState extends State<HomePage> {
       child: Padding(
         padding: const EdgeInsets.all(10.0),
         child: ListTile(
+          trailing: Icon(Icons.send_rounded),
+          onLongPress: () {
+            final String userInfo =
+                "Avatar: ${user.data[index].avatar}\nFirst Name: ${user.data[index].firstName}\nLast Name: ${user.data[index].lastName}\nEmail: ${user.data[index].email}";
+            Share.share(userInfo, subject: "User Profile Info");
+          },
           onTap: () async {
             Navigator.push(
               context,
@@ -296,7 +307,9 @@ class _HomePageState extends State<HomePage> {
                     user.data[index].firstName +
                         " " +
                         user.data[index].lastName,
-                    style: TextStyle(fontSize: 17),
+                    style: TextStyle(
+                      fontSize: 17,
+                    ),
                   ),
                   SizedBox(
                     height: 10,
@@ -307,14 +320,6 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ],
               ),
-              Padding(
-                padding: EdgeInsets.symmetric(vertical: 8),
-                child: IconButton(
-                  onPressed: () {},
-                  icon: Icon(Icons.send_sharp),
-                  alignment: Alignment.topRight,
-                ),
-              )
             ],
           ),
         ),

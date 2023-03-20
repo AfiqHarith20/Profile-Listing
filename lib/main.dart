@@ -1,11 +1,8 @@
-import 'package:profile_listing/dummy_data.dart';
-import 'package:profile_listing/models/user_model.dart';
 import 'package:profile_listing/screen/home_page.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:introduction_screen/introduction_screen.dart';
-import 'package:profile_listing/screen/profile_page.dart';
 
 void main() {
   runApp(const MyApp());
