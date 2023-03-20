@@ -63,7 +63,15 @@ class ProfilePage extends StatelessWidget {
                 const SizedBox(height: 20),
                 ElevatedButton(
                   onPressed: () {},
-                  child: Text("Send Email"),
+                  child: Text(
+                    "Send Email",
+                    textScaleFactor: 1.5,
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    padding:
+                        EdgeInsets.symmetric(horizontal: 40.0, vertical: 20.0),
+                    shape: StadiumBorder(),
+                  ),
                 )
               ],
             ),

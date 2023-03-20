@@ -1,10 +1,7 @@
-import 'dart:io'; // for File
-import 'dart:ffi';
+// for File
 import 'package:flutter/material.dart';
-import 'package:profile_listing/models/attendance.dart';
 import 'package:profile_listing/models/user_model.dart';
 import 'package:http/http.dart' as http;
-import 'package:profile_listing/widget/profile_widget.dart';
 import 'package:image_picker/image_picker.dart';
 
 class AddUserScreen extends StatefulWidget {
@@ -19,7 +16,8 @@ class AddUserScreen extends StatefulWidget {
 }
 
 class _AddUserScreenState extends State<AddUserScreen> {
-  late File _image;
+  XFile? image;
+  final ImagePicker picker = ImagePicker();
   final _formKey = GlobalKey<FormState>();
   final _firstnameController = TextEditingController();
   final _lastnameController = TextEditingController();
@@ -51,10 +49,11 @@ class _AddUserScreenState extends State<AddUserScreen> {
     }
   }
 
-  Future getImage() async {
-    var image = await ImagePicker().pickImage(source: ImageSource.gallery);
+  Future getImage(ImageSource media) async {
+    var img = await picker.pickImage(source: media);
+
     setState(() {
-      _image = image as File;
+      image = img;
     });
   }
 
@@ -81,7 +80,8 @@ class _AddUserScreenState extends State<AddUserScreen> {
             children: [
               GestureDetector(
                 onTap: () async {
-                  getImage();
+                  Navigator.pop(context);
+                  getImage(ImageSource.gallery);
                 },
                 child: Container(
                   margin: const EdgeInsets.only(top: 80, bottom: 24),

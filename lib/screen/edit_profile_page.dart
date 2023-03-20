@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:profile_listing/models/user_model.dart';
 import 'package:profile_listing/widget/profile_widget.dart';
 import 'package:profile_listing/widget/textfield_widget.dart';
@@ -16,6 +17,8 @@ class EditProfilePage extends StatefulWidget {
 }
 
 class _EditProfilePageState extends State<EditProfilePage> {
+  XFile? image;
+  final ImagePicker picker = ImagePicker();
   final _formKey = GlobalKey<FormState>();
   final _firstNameController = TextEditingController();
   final _lastNameController = TextEditingController();
@@ -47,6 +50,14 @@ class _EditProfilePageState extends State<EditProfilePage> {
     }
   }
 
+  Future getImage(ImageSource media) async {
+    var img = await picker.pickImage(source: media);
+
+    setState(() {
+      image = img;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -64,8 +75,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
               imagePath: widget.edit,
               isEdit: true,
               onClicked: () async {
-                controller:
-                _avatarController;
+                Navigator.pop(context);
+                getImage(ImageSource.gallery);
               },
             ),
             const SizedBox(height: 24),
@@ -97,10 +108,18 @@ class _EditProfilePageState extends State<EditProfilePage> {
             ),
             const SizedBox(height: 24),
             ElevatedButton(
-                onPressed: () {
-                  updateUser(id: widget.edit.id);
-                },
-                child: Text("Save"))
+              onPressed: () {
+                updateUser(id: widget.edit.id);
+              },
+              child: Text(
+                "Done",
+                textScaleFactor: 1.5,
+              ),
+              style: ElevatedButton.styleFrom(
+                padding: EdgeInsets.symmetric(horizontal: 40.0, vertical: 20.0),
+                shape: StadiumBorder(),
+              ),
+            ),
           ],
         ),
       ),
