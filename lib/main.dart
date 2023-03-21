@@ -119,13 +119,6 @@ class _OnBoardingPageState extends State<OnBoardingPage> {
           decoration: pageDecoration,
         ),
         PageViewModel(
-          title: "Switch Time Toggle",
-          body:
-              "If user want to switch time from fully time and date to format time ago. Click the toggle at top right to change time.",
-          image: _buildImage('controls.gif'),
-          decoration: pageDecoration,
-        ),
-        PageViewModel(
           title: "Good Job",
           body:
               "Now you understand how to use the apps. Thank You for reading the tutorials.",
