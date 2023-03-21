@@ -19,16 +19,16 @@ class AlertDialogs {
           title: Text(title),
           content: Text(body),
           actions: <Widget>[
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(false),
-              child: Text(
-                "No",
-                style: TextStyle(
-                  color: Color.fromARGB(255, 6, 161, 125),
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
+//             TextButton(
+//               onPressed: () => Navigator.of(context).pop(false),
+//               child: Text(
+//                 "No",
+//                 style: TextStyle(
+//                   color: Color.fromARGB(255, 6, 161, 125),
+//                   fontWeight: FontWeight.bold,
+//                 ),
+//               ),
+//             ),
             TextButton(
               onPressed: () => Navigator.of(context).pop(true),
               child: Text(
