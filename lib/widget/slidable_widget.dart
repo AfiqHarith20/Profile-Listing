@@ -11,11 +11,13 @@ enum SlidableActions { delete }
 class SlidableWidget<T> extends StatelessWidget {
   final Datum edits;
   final Widget child;
-  final Function(SlidableActions action) onDismissed;
+  // final Function(SlidableActions action) onDismissed;
+  final Function(SlidableActions action) confirmDismiss;
   SlidableWidget({
     super.key,
     required this.child,
-    required this.onDismissed,
+    // required this.onDismissed,
+    required this.confirmDismiss,
     required this.edits,
   });
 
@@ -32,7 +34,7 @@ class SlidableWidget<T> extends StatelessWidget {
             onPressed: (context) async {
               final action = await AlertDialogs.yesCancelDialog(context,
                   "Delete", "Are you sure you want to  delete this contact? ");
-              onDismissed(SlidableActions.delete);
+              confirmDismiss(SlidableActions.delete);
             },
             backgroundColor: Color.fromARGB(0, 254, 73, 73),
             foregroundColor: Colors.red,
