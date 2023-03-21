@@ -212,7 +212,7 @@ class _HomePageState extends State<HomePage> {
                                     itemCount: user.data.length,
                                     itemBuilder: (context, index) {
                                       return SlidableWidget(
-                                        onDismissed: (action) =>
+                                        confirmDismiss: (action) =>
                                             dismissSlidableItem(
                                                 context, index, action),
                                         edits: user.data[index],
@@ -236,7 +236,6 @@ class _HomePageState extends State<HomePage> {
       BuildContext context, int index, SlidableActions action) {
     setState(() {
       user.data.removeAt(index);
-      profile:
       user.data[index];
     });
 

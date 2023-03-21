@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 enum DialogsAction { yes, no }
 
 class AlertDialogs {
-  static Future<DialogsAction> yesCancelDialog(
+  static yesCancelDialog(
     BuildContext context,
     String title,
     String body,
@@ -20,7 +20,7 @@ class AlertDialogs {
           content: Text(body),
           actions: <Widget>[
             TextButton(
-              onPressed: () => Navigator.of(context).pop(DialogsAction.no),
+              onPressed: () => Navigator.of(context).pop(false),
               child: Text(
                 "No",
                 style: TextStyle(
@@ -30,7 +30,7 @@ class AlertDialogs {
               ),
             ),
             TextButton(
-              onPressed: () => Navigator.of(context).pop(DialogsAction.yes),
+              onPressed: () => Navigator.of(context).pop(true),
               child: Text(
                 "Yes",
                 style: TextStyle(
@@ -43,6 +43,6 @@ class AlertDialogs {
         );
       },
     );
-    return (action != null) ? action : DialogsAction.no;
+    return (action != null) ? action : false;
   }
 }
